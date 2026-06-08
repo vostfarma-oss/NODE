@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>NODE — центр управления сетью</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="gridCanvas"></canvas>
+    <div class="glow"></div>
+    <div class="noise"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-symbol">
+                    <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="6" fill="#42f5bc" opacity="0.95"/>
+                        <circle cx="16" cy="16" r="10" stroke="#42f5bc" stroke-width="1.2" fill="none" opacity="0.5"/>
+                        <circle cx="16" cy="16" r="14" stroke="#42f5bc" stroke-width="0.6" fill="none" opacity="0.25"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke="#42f5bc" stroke-width="1.2" opacity="0.7"/>
+                        <line x1="16" y1="26" x2="16" y2="30" stroke="#42f5bc" stroke-width="1.2" opacity="0.7"/>
+                        <line x1="2" y1="16" x2="6" y2="16" stroke="#42f5bc" stroke-width="1.2" opacity="0.7"/>
+                        <line x1="26" y1="16" x2="30" y2="16" stroke="#42f5bc" stroke-width="1.2" opacity="0.7"/>
+                        <circle cx="16" cy="16" r="2" fill="#fff" opacity="0.8"/>
+                    </svg>
+                </div>
+                <span class="logo-text">NODE</span>
+            </div>
+            <div class="header-links">
+                <span class="version">v1.0</span>
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="hero">
+                <div class="hero-badge">
+                    <span class="badge-glow"></span>
+                    🔥 Управляй своей сетью
+                </div>
+                <h1>Центр управления<br>твоей <span class="accent">сетью</span></h1>
+                <p class="subtitle">WiFi-мониторинг, управление роутером, умный дом и аналитика<br>в одном приложении. Без лишних настроек.</p>
+            </div>
+
+            <div class="download-section">
+                <div class="platform-tabs">
+                    <button class="platform-btn active" data-platform="windows">
+                        <span class="btn-icon">🪟</span> Windows
+                    </button>
+                    <button class="platform-btn" data-platform="android">
+                        <span class="btn-icon">🤖</span> Android
+                    </button>
+                </div>
+
+                <div class="download-card" id="downloadCard">
+                    <div class="platform-icon" id="platformIcon">🪟</div>
+                    <div class="download-info">
+                        <h3 id="platformName">Windows 10/11</h3>
+                        <p id="platformDesc">Установщик 12 МБ • Дайте разрешения при установке</p>
+                    </div>
+                    <button class="download-btn" id="downloadBtn">
+                        <span class="btn-icon">⬇️</span>
+                        <span class="btn-text">Скачать .exe</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+
+                <div class="trust-badge">
+                    <span>🔒</span> Пароли только локально
+                    <span class="dot">•</span>
+                    <span>📖</span> Открытый код
+                    <span class="dot">•</span>
+                    <span>⚡</span> Работает без интернета
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon-bg"></div>
+                        <div class="feature-icon">📡</div>
+                    </div>
+                    <h4>Сканер сети</h4>
+                    <p>Все устройства, IP, MAC, производитель — за 3 секунды</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon-bg"></div>
+                        <div class="feature-icon">🎛️</div>
+                    </div>
+                    <h4>Управление роутером</h4>
+                    <p>Смена пароля, отключение устройств, гостевая сеть</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon-bg"></div>
+                        <div class="feature-icon">🏠</div>
+                    </div>
+                    <h4>Умный дом</h4>
+                    <p>Tuya, MiHome, Home Assistant — всё в одном окне</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon-bg"></div>
+                        <div class="feature-icon">⚡</div>
+                    </div>
+                    <h4>Контроль скорости</h4>
+                    <p>Ограничение торрентов, приоритет для работы</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 NODE — создано для управления домашней сетью</p>
+            <div class="footer-links">
+                <a href="#">GitHub</a>
+                <span class="dot">•</span>
+                <a href="#">Telegram</a>
+                <span class="dot">•</span>
+                <a href="#">Docs</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
