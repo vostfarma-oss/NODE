@@ -1,1 +1,214 @@
+name: Build NODE Android APK
 
+on:
+  push:
+    branches: [ "android-app" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      
+      - name: Create debug keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug, O=Android, C=US" -storepass android -keypass android
+      
+      - name: Create Android project structure
+        run: |
+          mkdir -p app/src/main/java/com/node/app
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
+          
+          cat > app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.node.app">
+              <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+              <uses-permission android:name="android.permission.INTERNET" />
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="NODE"
+                  android:theme="@style/Theme.Node">
+                  <activity android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+          
+          cat > app/src/main/java/com/node/app/MainActivity.java << 'EOF'
+          package com.node.app;
+          import android.os.Bundle;
+          import android.widget.TextView;
+          import androidx.appcompat.app.AppCompatActivity;
+          import android.net.wifi.WifiManager;
+          import android.net.wifi.WifiInfo;
+          import android.content.Context;
+          import android.text.format.Formatter;
+          
+          public class MainActivity extends AppCompatActivity {
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  setContentView(R.layout.activity_main);
+                  
+                  WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                  WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                  
+                  TextView ssidText = findViewById(R.id.ssidText);
+                  TextView ipText = findViewById(R.id.ipText);
+                  TextView signalText = findViewById(R.id.signalText);
+                  
+                  String ssid = wifiInfo.getSSID().replace("\"", "");
+                  String ip = Formatter.formatIpAddress(wifiInfo.getIpAddress());
+                  int signal = wifiInfo.getRssi();
+                  
+                  ssidText.setText("📡 " + ssid);
+                  ipText.setText("🌐 " + ip);
+                  signalText.setText("📶 " + signal + " dBm");
+              }
+          }
+          EOF
+          
+          cat > app/src/main/res/layout/activity_main.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:gravity="center"
+              android:padding="24dp"
+              android:background="#020505">
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="NODE"
+                  android:textSize="32sp"
+                  android:textColor="#42f5bc"
+                  android:textStyle="bold"
+                  android:layout_marginBottom="32dp" />
+              <TextView
+                  android:id="@+id/ssidText"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textSize="18sp"
+                  android:textColor="#eef5f5"
+                  android:layout_marginBottom="16dp" />
+              <TextView
+                  android:id="@+id/ipText"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textSize="16sp"
+                  android:textColor="#8aaeae"
+                  android:layout_marginBottom="16dp" />
+              <TextView
+                  android:id="@+id/signalText"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textSize="16sp"
+                  android:textColor="#8aaeae" />
+          </LinearLayout>
+          EOF
+          
+          cat > app/src/main/res/values/themes.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="Theme.Node" parent="Theme.AppCompat.DayNight.NoActionBar">
+                  <item name="android:statusBarColor">#020505</item>
+                  <item name="android:navigationBarColor">#020505</item>
+              </style>
+          </resources>
+          EOF
+          
+          cat > app/build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+          android {
+              namespace 'com.node.app'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.node.app"
+                  minSdk 26
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes {
+                  debug {
+                      signingConfig signingConfigs.debug
+                  }
+              }
+          }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+          }
+          EOF
+          
+          cat > settings.gradle << 'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "NODE"
+          include ':app'
+          EOF
+          
+          cat > build.gradle << 'EOF'
+          plugins {
+              id 'com.android.application' version '8.1.0' apply false
+          }
+          EOF
+          
+          mkdir -p gradle/wrapper
+          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.0-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+          
+          echo "placeholder" > app/src/main/res/mipmap-hdpi/ic_launcher.png
+      
+      - name: Build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NODE-Android-App
+          path: app/build/outputs/apk/debug/app-debug.apk
