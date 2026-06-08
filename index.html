@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>NODE — центр управления экосистемой</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dynamic-bg"></div>
+    <canvas id="gridCanvas"></canvas>
+    <div class="noise"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-symbol">
+                    <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="5" fill="#42f5bc" />
+                        <circle cx="16" cy="16" r="9" stroke="#42f5bc" stroke-width="1.2" fill="none" opacity="0.6"/>
+                        <circle cx="16" cy="16" r="13" stroke="#42f5bc" stroke-width="0.6" fill="none" opacity="0.3"/>
+                        <line x1="16" y1="3" x2="16" y2="6" stroke="#42f5bc" stroke-width="1.2" opacity="0.8"/>
+                        <line x1="16" y1="26" x2="16" y2="29" stroke="#42f5bc" stroke-width="1.2" opacity="0.8"/>
+                        <line x1="3" y1="16" x2="6" y2="16" stroke="#42f5bc" stroke-width="1.2" opacity="0.8"/>
+                        <line x1="26" y1="16" x2="29" y2="16" stroke="#42f5bc" stroke-width="1.2" opacity="0.8"/>
+                        <circle cx="16" cy="16" r="2" fill="#fff" opacity="0.9"/>
+                    </svg>
+                </div>
+                <span class="logo-text">NODE</span>
+            </div>
+            <div class="header-controls">
+                <span class="version-chip">v1.0 Beta</span>
+                <button class="menu-btn" aria-label="Меню">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="4" y1="6" x2="20" y2="6" />
+                        <line x1="4" y1="12" x2="20" y2="12" />
+                        <line x1="4" y1="18" x2="20" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="hero">
+                <div class="hero-badge">
+                    <span class="badge-glow"></span>
+                    ⚡ NODE. Единый центр
+                </div>
+                <h1>Управляй <span class="accent">экосистемой</span><br>из одной точки</h1>
+                <p class="subtitle">WiFi, роутер, умный дом и все устройства — под полным контролем. Мощно. Просто. Элегантно.</p>
+            </div>
+
+            <div class="download-section">
+                <div class="platform-tabs">
+                    <button class="platform-btn active" data-platform="windows">💻 Windows</button>
+                    <button class="platform-btn" data-platform="android">📱 Android</button>
+                </div>
+
+                <div class="download-card" id="downloadCard">
+                    <div class="download-info">
+                        <h3 id="platformName">Windows 10/11</h3>
+                        <p id="platformDesc">Установщик 12 МБ • Требуются разрешения</p>
+                    </div>
+                    <button class="download-btn" id="downloadBtn">
+                        <span>⬇️</span>
+                        <span class="btn-text">Скачать</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+                <div class="version-hint">Версия 1.0 Beta • 12 МБ</div>
+
+                <div class="trust-badge">
+                    <span>🔒</span> Пароли локально
+                    <span class="dot">•</span>
+                    <span>📖</span> Открытый код
+                    <span class="dot">•</span>
+                    <span>⚡</span> Без интернета
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#42f5bc" stroke-width="1.5">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+                            <path d="M8.5 16.28a5 5 0 0 1 7 0" />
+                            <circle cx="12" cy="19" r="1.5" />
+                        </svg>
+                    </div>
+                    <h4>Сканер сети</h4>
+                    <p>Все устройства за 3 секунды. IP, MAC, имена — полная картина.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#42f5bc" stroke-width="1.5">
+                            <rect x="4" y="8" width="16" height="12" rx="2" />
+                            <path d="M8 6v2M16 6v2" />
+                            <path d="M12 12v4M9 15h6" />
+                        </svg>
+                    </div>
+                    <h4>Управление роутером</h4>
+                    <p>Смена пароля, блокировка гостей, родительский контроль без панели 192.168.1.1.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#42f5bc" stroke-width="1.5">
+                            <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                    </div>
+                    <h4>Умный дом</h4>
+                    <p>Tuya, MiHome, Home Assistant — все сценарии в одном окне.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#42f5bc" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 8v8M8 12h8" />
+                        </svg>
+                    </div>
+                    <h4>Контроль трафика</h4>
+                    <p>Ограничь торренты, поставь приоритет для игр. Никаких лагов.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2026 NODE — центр управления цифровым домом</p>
+            <div class="footer-links">
+                <a href="#">GitHub</a>
+                <span class="dot">•</span>
+                <a href="#">Telegram</a>
+                <span class="dot">•</span>
+                <a href="#">Документация</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
