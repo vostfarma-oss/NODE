@@ -14,15 +14,14 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
         distribution: 'temurin'
+        java-version: '17'
     
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
     
     - name: Create Android project
       run: |
-        # Создаём все нужные папки
         mkdir -p app/src/main/java/com/node/app
         mkdir -p app/src/main/res/layout
         mkdir -p app/src/main/res/values
@@ -34,12 +33,17 @@ jobs:
         
         # AndroidManifest.xml
         cat > app/src/main/AndroidManifest.xml << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android"
             package="com.node.app">
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-permission android:name="android.permission.INTERNET" />
-            <application android:label="NODE" android:theme="@style/Theme.Node">
+            <application
+                android:allowBackup="true"
+                android:icon="@mipmap/ic_launcher"
+                android:label="NODE"
+                android:theme="@style/Theme.Node">
                 <activity android:name=".MainActivity" android:exported="true">
                     <intent-filter>
                         <action android:name="android.intent.action.MAIN" />
@@ -70,13 +74,17 @@ jobs:
                 WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 
-                TextView infoText = findViewById(R.id.infoText);
+                TextView ssidText = findViewById(R.id.ssidText);
+                TextView ipText = findViewById(R.id.ipText);
+                TextView signalText = findViewById(R.id.signalText);
                 
                 String ssid = wifiInfo.getSSID().replace("\"", "");
                 String ip = Formatter.formatIpAddress(wifiInfo.getIpAddress());
                 int signal = wifiInfo.getRssi();
                 
-                infoText.setText("📡 " + ssid + "\n\n🌐 " + ip + "\n\n📶 " + signal + " dBm");
+                ssidText.setText("📡 " + ssid);
+                ipText.setText("🌐 " + ip);
+                signalText.setText("📶 " + signal + " dBm");
             }
         }
         EOF
@@ -95,22 +103,36 @@ jobs:
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NODE"
-                android:textSize="36sp"
+                android:textSize="32sp"
                 android:textColor="#42f5bc"
                 android:textStyle="bold"
                 android:layout_marginBottom="32dp" />
             <TextView
-                android:id="@+id/infoText"
+                android:id="@+id/ssidText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#eef5f5"
+                android:layout_marginBottom="16dp" />
+            <TextView
+                android:id="@+id/ipText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textColor="#8aaeae"
-                android:gravity="center" />
+                android:layout_marginBottom="16dp" />
+            <TextView
+                android:id="@+id/signalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#8aaeae" />
         </LinearLayout>
         EOF
         
         # themes.xml
         cat > app/src/main/res/values/themes.xml << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
         <resources>
             <style name="Theme.Node" parent="Theme.AppCompat.DayNight.NoActionBar">
                 <item name="android:statusBarColor">#020505</item>
@@ -119,7 +141,7 @@ jobs:
         </resources>
         EOF
         
-        # Создаём заглушки для иконок (простые файлы)
+        # Иконки-заглушки
         for size in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
             echo "icon" > app/src/main/res/mipmap-$size/ic_launcher.png
             echo "icon" > app/src/main/res/mipmap-$size/ic_launcher_round.png
@@ -155,6 +177,9 @@ jobs:
         cat > settings.gradle << 'EOF'
         pluginManagement {
             repositories {
+                maven { url 'https://maven.aliyun.com/repository/google' }
+                maven { url 'https://maven.aliyun.com/repository/public' }
+                maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
                 google()
                 mavenCentral()
                 gradlePluginPortal()
@@ -162,6 +187,8 @@ jobs:
         }
         dependencyResolutionManagement {
             repositories {
+                maven { url 'https://maven.aliyun.com/repository/google' }
+                maven { url 'https://maven.aliyun.com/repository/public' }
                 google()
                 mavenCentral()
             }
@@ -182,34 +209,32 @@ jobs:
         cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
         distributionBase=GRADLE_USER_HOME
         distributionPath=wrapper/dists
-        distributionUrl=https\://services.gradle.org/distributions/gradle-8.0-bin.zip
+        distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.0-bin.zip
         zipStoreBase=GRADLE_USER_HOME
         zipStorePath=wrapper/dists
         EOF
-        
-        # gradlew
-        cat > gradlew << 'EOF'
-        #!/bin/bash
-        echo "Gradle wrapper ready"
-        EOF
-        chmod +x gradlew
         
         # gradle.properties
         cat > gradle.properties << 'EOF'
         org.gradle.jvmargs=-Xmx1536m
         android.useAndroidX=true
         EOF
+        
+        # Скачиваем gradle-wrapper.jar
+        mkdir -p gradle/wrapper
+        curl -L -o gradle/wrapper/gradle-wrapper.jar https://mirrors.cloud.tencent.com/gradle/gradle-8.0-wrapper.jar
     
-    - name: Download gradle-wrapper.jar
+    - name: Make gradlew executable
       run: |
-        cd gradle/wrapper
-        curl -L -o gradle-wrapper.jar https://github.com/gradle/gradle/raw/v8.0.0/gradle/wrapper/gradle-wrapper.jar
-        cd ../..
+        cat > gradlew << 'EOF'
+        #!/bin/bash
+        exec java -cp gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain "$@"
+        EOF
+        chmod +x gradlew
     
     - name: Build APK
       run: |
-        chmod +x gradlew
-        ./gradlew assembleDebug --no-daemon --stacktrace
+        ./gradlew assembleDebug --no-daemon --stacktrace --info
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
