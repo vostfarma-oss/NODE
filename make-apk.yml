@@ -1,0 +1,13 @@
+name: Make APK
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create APK
+        run: echo "NODE APK" > app.apk
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: NODE-App
+          path: app.apk
